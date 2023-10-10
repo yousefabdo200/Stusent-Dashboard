@@ -17,7 +17,7 @@ class AdminController extends Controller
     use ApiResponse;
     public function __construct()
     {
-        $this->middleware('auth:admin', ['except' => ['login', 'register']]);//login, register methods won't go through the admin guard
+        $this->middleware('auth:admin', ['except' => ['login']]);//login, register methods won't go through the admin guard
 
     }
 

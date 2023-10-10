@@ -17,12 +17,17 @@ class Teacher extends  Authenticatable implements JWTSubject
     protected $table='Teacher';
 
     protected $fillable=['id','name','password','SSN','Email','created_at','updated_at','Admin_id'];
-    //protected $hidden=['created_at','updated_at'];
+    protected $hidden=['password'];
    
      public function admin():BelongsTo // Admin and teacher relation 
      {
         return $this->belongsTo(Admin::class,'Admin_id');
      }
+     public function classroom():HasMany // Teacher and classroom relation 
+     {
+        return $this->hasMany(Classroom::class,'Teacher_id');
+     }
+    
       /////////////////////////////JWT Methods ////////////////////////////////////
     public function getJWTIdentifier()
     {

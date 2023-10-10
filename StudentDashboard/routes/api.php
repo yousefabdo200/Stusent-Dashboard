@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Teacher\TeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,5 +32,22 @@ Route::group(['prefix'=>'Admin'],function()
     Route::get('delete_student/{id}',[AdminController::class,'delete_student'])->name('delete_student');
     Route::get('delete_teacher/{id}',[AdminController::class,'delete_teacher'])->name('delete_teacher');
     Route::get('logout',[AdminController::class,'logout'])->name('logout');
+
+});
+Route::group(['prefix'=>'Teacher'],function()
+{
+    Route::post('login',[TeacherController::class,'login'])->name('login');
+    Route::get('Home',[TeacherController::class,'Home'])->name('Home');
+    Route::get('logout',[TeacherController::class,'logout'])->name('logout');
+    Route::get('classes',[TeacherController::class,'classes'])->name('classes');
+    Route::post('creatclass',[TeacherController::class,'creatclass'])->name('creatclass');
+    Route::get('single_class/{class_id}',[TeacherController::class,'single_class'])->name('single_class');
+    Route::get('class_students/{class_id}',[TeacherController::class,'class_students'])->name('class_students');
+    Route::post('add_student',[TeacherController::class,'add_student'])->name('add_student');
+    Route::post('create_exam',[TeacherController::class,'create_exam'])->name('create_exam');
+    Route::get('all_exams',[TeacherController::class,'all_exams'])->name('all_exams');
+    Route::get('get_exam',[TeacherController::class,'get_exam'])->name('get_exam');
+    Route::get('student_degrees',[TeacherController::class,'student_degrees'])->name('student_degrees');
+    Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');
 
 });
