@@ -36,18 +36,25 @@ Route::group(['prefix'=>'Admin'],function()
 });
 Route::group(['prefix'=>'Teacher'],function()
 {
-    Route::post('login',[TeacherController::class,'login'])->name('login');
-    Route::get('Home',[TeacherController::class,'Home'])->name('Home');
-    Route::get('logout',[TeacherController::class,'logout'])->name('logout');
-    Route::get('classes',[TeacherController::class,'classes'])->name('classes');
-    Route::post('creatclass',[TeacherController::class,'creatclass'])->name('creatclass');
-    Route::get('single_class/{class_id}',[TeacherController::class,'single_class'])->name('single_class');
-    Route::get('class_students/{class_id}',[TeacherController::class,'class_students'])->name('class_students');
-    Route::post('add_student',[TeacherController::class,'add_student'])->name('add_student');
-    Route::post('create_exam',[TeacherController::class,'create_exam'])->name('create_exam');
-    Route::get('all_exams',[TeacherController::class,'all_exams'])->name('all_exams');
+    Route::post('login',[TeacherController::class,'login'])->name('login');//Teacher login api route
+    Route::get('Home',[TeacherController::class,'Home'])->name('Home');//Teacher Home page
+    Route::get('logout',[TeacherController::class,'logout'])->name('logout');//Teacher log out
+    //reset password
+    Route::get('classes',[TeacherController::class,'classes'])->name('classes');//view all class created by teacher
+    Route::post('update_class',[TeacherController::class,'update_class'])->name('update_class');//update class information 
+    Route::post('delete_class/{class_code}',[TeacherController::class,'delete_class'])->name('delete_class');//delete class and all realtions related to it
+    Route::post('creatclass',[TeacherController::class,'creatclass'])->name('creatclass');//create new class
+    Route::get('single_class/{class_id}',[TeacherController::class,'single_class'])->name('single_class');//view singele class
+    Route::get('class_students/{class_id}',[TeacherController::class,'class_students'])->name('class_students');//view all class students 
+    Route::post('add_student',[TeacherController::class,'add_student'])->name('add_student');//add  student to class
+    Route::post('remove_student',[TeacherController::class,'remove_student'])->name('remove_student');//remove student from class
+    Route::post('create_exam',[TeacherController::class,'create_exam'])->name('create_exam');//create new exam for class
+    Route::post('update_exam/{exam_id}',[TeacherController::class,'update_exam'])->name('update_exam');//update exam information
+    Route::get('delete_exam',[TeacherController::class,'delete_exam'])->name('delete_exam');//Delete Exam 
+    Route::get('all_exams',[TeacherController::class,'all_exams'])->name('all_exams');//view all exams
     Route::get('get_exam',[TeacherController::class,'get_exam'])->name('get_exam');
-    Route::get('student_degrees',[TeacherController::class,'student_degrees'])->name('student_degrees');
-    Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');
-
+    Route::get('student_degrees',[TeacherController::class,'student_degrees'])->name('student_degrees'); //view all student degrees
+    Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');//set all students degrees
+    Route::post('take_attend',[TeacherController::class,'take_attend'])->name('take_attend');//take  student attend attend 
+    Route::get('atend_status/{class_code}',[TeacherController::class,'atend_status'])->name('atend_status');//view students all atendes status
 });

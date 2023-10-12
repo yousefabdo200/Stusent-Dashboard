@@ -16,7 +16,7 @@ class Student  extends  Authenticatable implements JWTSubject
     use HasFactory;
     protected $table='Student';
     protected $fillable=['id','name','password','SSN','Email','Pphone','Grade','birth_date','PEmail','created_at','updated_at','Admin_id'];
-    protected $hidden=['created_at','updated_at','password','pivot'];
+    protected $hidden=['created_at','updated_at','password'];
        public function admin():BelongsTo  // Admin and student relation 
     {
        return $this->belongsTo(Admin::class,'Admin_id');
@@ -29,6 +29,10 @@ class Student  extends  Authenticatable implements JWTSubject
      public function Exam()
     {
         return $this->belongsToMany(Exam::class,'Student_Exam_degree','Student_id','Exam_id')->withPivot('degree');
+    }
+    public function classattend()
+    {
+        return $this->belongsToMany(Classroom::class,'Student_Classroom_attend','Student_id','Class_id')->withPivot(['created_at','status']);
     }
      public function getJWTIdentifier()
      {

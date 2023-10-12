@@ -32,7 +32,10 @@ class Classroom extends  Authenticatable implements JWTSubject
     {
         return $this->hasMany(Exam::class,'Class_id');
     }
-    
+    public function studentattend()
+    {
+        return $this->belongsToMany(Student::class,'Student_Classroom_attend','Class_id','Student_id')->withPivot(['created_at','status']);
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();
