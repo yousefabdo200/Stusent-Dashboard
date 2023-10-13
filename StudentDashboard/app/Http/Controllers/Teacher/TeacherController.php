@@ -88,22 +88,18 @@ class TeacherController extends Controller
             }
             return $this->Response('','successful',200);
     }
-    public function update_class(Request $request)
+    public function update_class(Request $request,$class_code)
     {
-        //vlaidtion 
-        $idValidator = Validator::make($request->all(), [
-            'id' => 'required|exists:Classroom,id',
-        ]);
-        if ($idValidator->fails()) {
-            return $this->Response($idValidator->errors(),'column not exist',406);
-            //return response()->json($validator->errors(), 422);
+        $classroom = Classroom::where('code','=',$class_code)->first();
+        if(!$classroom)
+        {
+            return $this->Response('','Not fonund',404);
         }
-        
         $validator=validator::make($request->all(),[
             'name'=>'required|max:250|string',
             'descriprion'=>'required|string',
             'constrains'=>'required|string',
-           'code'=>'required|unique:Classroom,code,'. $request->id,
+           'code'=>'required|unique:Classroom,code,'. $classroom->id,
          
 
         ]);
@@ -111,19 +107,13 @@ class TeacherController extends Controller
             return $this->Response($validator->errors(),'validation errors',406);
             //return response()->json($validator->errors(), 422);
         }
-        
-        $classroom=Classroom::find($request->id);
-        if(!$classroom)
-        {
-            return $this->Response('','Not found',404);
-        }
         $classroom->update($request->all());
         return $this->Response('','successful',200);
     }
-    public function single_class($class_id)
+    public function single_class($class_code)
     {
         //$teacher=auth()->user();
-        $data=Classroom::where('id','=',$class_id)->first();
+        $data=Classroom::where('code','=',$class_code)->first();
         if(!$data)
         {
             return $this->Response('','Not fonund',404);
@@ -165,9 +155,9 @@ class TeacherController extends Controller
     return $this->Response('', 'Successful', 200);
 }
 
-    public function class_students($class_id)
+    public function class_students($class_code)
     {
-        $classroom = Classroom::find($class_id);
+        $classroom = Classroom::where('code', $class_code)->first();
         if(!$classroom)
         {
             return $this->Response('','Not fonund',404);

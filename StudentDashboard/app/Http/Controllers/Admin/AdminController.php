@@ -11,6 +11,8 @@ use App\Models\Admin;
 use App\Models\Teacher;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\ApiResponse;
+use App\Models\Classroom;
+
 class AdminController extends Controller
 {
     //
@@ -74,11 +76,6 @@ class AdminController extends Controller
             );
             $token = JWTAuth::fromUser($teacher);
             return $this->Response('','User successfully registered',200);
-            /*
-            return response()->json([
-                'message' => 'User successfully registered',
-                'token' => $token,
-            ], 200);*/
     } 
     //add new student
     public function create_student(Request $request)
@@ -88,9 +85,9 @@ class AdminController extends Controller
             'name'=>'required|max:250|string',
             'password' => 'required|min:6|confirmed:password_confirmation',
             'password_confirmation' => 'required', 
-            'SSN'=>'required|Numeric|min:15|unique:Student',
+            'SSN' => 'required|unique:Student|numeric|between:15,50',
             'Email'=>'required|Email|unique:Student',
-            'PEmail'=>'required|Email|unique:Student',
+            'PEmail'=>'required|Email',
             'Pphone'=>'required|Numeric',
             'Grade'=>'required',
             'birth_date'=>'required|date_format:Y-m-d',
@@ -117,22 +114,12 @@ class AdminController extends Controller
             );
             $token = JWTAuth::fromUser($student);
             return $this->Response('','User successfully registered',200);
-            /*
-            return response()->json([
-                'message' => 'User successfully registered',
-                'token' => $token,
-            ], 200);*/
     } 
 
     //view All teacheres
     public function view_teacher()
     {
         $admin = auth()->user(); // Retrieve the authenticated admin
-        /*
-        $teacher=Admin :: with(['teacher'=>function($query)
-        {
-            $query->select('id','name');
-        }])->find($admin->id);*/
         $data=Teacher::with(['admin'=>function($query)
         {
             $query->select(['id','name']);
@@ -142,22 +129,9 @@ class AdminController extends Controller
         if(!$data)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
         }
         $data->makeHidden('Admin_id');
         return $this->Response($data,'All Teachers',200);
-       /* return response()->json([
-            'message' => 'All teachers',
-            'data'=>$teacher
-        ], 200);*/
-
-        
     }
     //view All students  
     public function view_student()
@@ -172,28 +146,10 @@ class AdminController extends Controller
         if(!$data)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no Students Added',
-                ],
-                404
-            );*/
         }
         $data->makeHidden('Admin_id');
         return $this->Response($data,'All Students',200);
-        /*
-        return response()->json([
-            'message' => 'All Students',
-            'data'=>$student->student
-        ], 200);*/
-
-        
     }
-
-
-
-
 // select single student 
   public function select_student($student_id)
     {
@@ -203,20 +159,8 @@ class AdminController extends Controller
         if(!$student||$student->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
         }
         return $this->Response($student,'Student data',200);
-        /*
-        return response()->json([
-            'message' => 'student data',
-            'data'=>$student
-        ], 200);*/
     }
     //select single teacher
     public function select_teacher($teacher_id)
@@ -227,21 +171,8 @@ class AdminController extends Controller
         if(!$teacher||$teacher->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
         }
         return $this->Response($teacher,'Teacher data',200);
-
-        /*
-        return response()->json([
-            'message' => 'teacher data',
-            'data'=>$teacher
-        ], 200);*/
     } 
 
     public function update_teacher(Request $request , $teacher_id)
@@ -252,13 +183,6 @@ class AdminController extends Controller
         if(!$teacher||$teacher->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
         }
         //validation 
         $validate=Validator::make($request->all(),
@@ -273,11 +197,6 @@ class AdminController extends Controller
         }
         $teacher->update($request->all());
         return $this->Response('','teacher Updated Succesfully',200);
-        /*
-        return response()->json([
-            'message' => 'teacher Updated Succesfully',
-            'data'=>$teacher
-        ], 200);*/
     }
 
 
@@ -289,13 +208,6 @@ class AdminController extends Controller
         if(!$student||$student->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
         }
         //validation 
         $validate=Validator::make($request->all(),
@@ -313,11 +225,6 @@ class AdminController extends Controller
         }
         $student->update($request->all());
         return $this->Response('','student Updated Succesfully',200);
-        /*
-        return response()->json([
-            'message' => 'student Updated Succesfully',
-            'data'=>$student
-        ], 200);*/
     }
     //Delete teacher
     public function delete_teacher($teacher_id) 
@@ -327,22 +234,34 @@ class AdminController extends Controller
         if(!$teacher||$teacher->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
+        }
+        //$teacher->delete();
+        $classrooms=Classroom::where('Teacher_id','=',$teacher->id)->get();
+        if($teacher->classroom()->exists())
+        {
+            foreach($teacher->classroom as $class)
+            {
+                if ($class->studentattend()->exists()) {
+                    $class->studentattend()->detach();
+                }
+                // Check if the classroom has students registered
+                if ($class->student()->exists()) {
+                    $class->student()->detach();
+                }
+                if ($class->exam()->exists()) {
+                    foreach ($class->exam as $exam) {
+                        // Detach students from the exam
+                        $exam->student()->detach();
+                        // Delete the exam
+                        $exam->delete();
+                    }
+                }
+                $class->delete();
+            }
         }
         $teacher->delete();
         return $this->Response('','teacher Deleted Succesfully',200);
-        /*
-        return response()->json([
-            'message' => 'teacher Deleted Succesfully',
-            'data'=>[]
-        ], 200);
-        */
+
     }
 
     public function delete_student($student_id)
@@ -352,32 +271,33 @@ class AdminController extends Controller
         if(!$student||$student->count()==0)
         {
             return $this->Response('','Not fonund',404);
-            /*
-            return response()->json(
-                [
-                    'message'=>'no teachers Added',
-                ],
-                404
-            );*/
+        }
+        //$student=Student::with('class_room')->where('id',$student_id)->first();
+        $clasrooms=$student->class_room;
+        foreach($clasrooms as $class)
+        {
+            
+            if ($class->studentattend()->exists($student->id)) {
+                $class->studentattend()->detach($student->id);
+            }
+            // Check if the classroom has students registered
+            if ($class->student()->exists($student->id)) {
+                $class->student()->detach($student->id);
+            }
+            if ($class->exam()->exists($student->id)) {
+                foreach ($class->exam as $exam) {
+                    // Detach students from the exam
+                    $exam->student()->detach($student->id);
+                }
+            }
         }
         $student->delete();
         return $this->Response('','student Deleted Succesfully',200);
-        /*
-        return response()->json([
-            'message' => 'student Deleted Succesfully',
-            'data'=>[]
-        ], 200);*/
-        
     }
-
-
     public function logout()
     {
         auth()->logout();
         return $this->Response('','Successfully loged out',200);
        // return response()->json(['message' => 'Successfully logged out']);
     }
-    
-   
-    
 }  
