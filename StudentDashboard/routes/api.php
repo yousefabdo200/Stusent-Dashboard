@@ -5,8 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Teacher\TeacherController;
-
-/*
+use App\Http\Controllers\Student\StudentController;/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -57,4 +56,17 @@ Route::group(['prefix'=>'Teacher'],function()
     Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');//set all students degrees
     Route::post('take_attend',[TeacherController::class,'take_attend'])->name('take_attend');//take  student attend attend 
     Route::get('atend_status/{class_code}',[TeacherController::class,'atend_status'])->name('atend_status');//view students all atendes status
+});
+Route::group(['prefix'=>'Student'],function()
+{
+    Route::post('login',[StudentController::class,'login'])->name('login');//student login api route
+    Route::get('Home',[StudentController::class,'Home'])->name('Home');//student Home page
+    Route::get('logout',[StudentController::class,'logout'])->name('logout');//student log out
+    Route::get('classes',[StudentController::class,'classes'])->name('classes');//get all student classes
+    Route::get('class/{class_code}',[StudentController::class,'class'])->name('class');//get  class data
+    Route::get('attend/{class_code}',[StudentController::class,'attend'])->name('attend');//get  class data
+    Route::get('exams/{class_code}',[StudentController::class,'exams'])->name('exam');//get  class data
+
+    //reset password
+   
 });
