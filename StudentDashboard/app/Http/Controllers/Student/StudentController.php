@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Student;
 
 
 use App\Http\Controllers\Controller;
+use App\Mail\RestPasswordEmail;
+use App\Models\Password_reset_token;
 use App\Models\Student;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Teacher;
@@ -24,7 +28,7 @@ class StudentController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth:student', ['except' => ['login']]);//login, register methods won't go through the admin guard
+        $this->middleware('auth:student', ['except' => ['login','restpassword','sendemail']]);//login, register methods won't go through the admin guard
 
     }
     public function login(Request $request)
@@ -115,5 +119,68 @@ class StudentController extends Controller
             return response(['message' => "You don't have exams yet"], 200);
         }
         return $this->Response($exams,'Successful',200);
+    }
+    public function sendemail(Request $request)
+    {
+         $validator=Validator::make($request->all(),[
+            'email'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->Response($validator->errors(),'validation errors',406);
+            //return response()->json($validator->errors(), 422);
+        }
+        $user=Student::where('Email','=',$request->email)->first();
+        if(!$user)
+        {
+            return $this->Response('','user not found',404);
+        }
+
+        //create token
+       
+        date_default_timezone_set('Africa/Cairo');
+        $email= Password_reset_token::where('email','=',$request->email)->first();
+        //save token to database
+       if(!$email)
+       {
+        $token =bin2hex(random_bytes(32));
+        Password_reset_token::insert(
+            [
+                'email'=>$request->email,
+                'token'=>$token,
+                'created_at'=>Carbon::now()
+            ]
+            );
+       }
+       else
+       {
+        $token=$email->token;
+       }
+        $data=['token'=>$token];
+        Mail::to($request->email)->send(new RestPasswordEmail($token)); 
+        return $this->Response($data,'succesful sent',200);
+    }
+    public function restpassword(Request $request)
+    {
+        //validation
+        $validator=Validator::make($request->all(),[
+            'email'=>'required',
+            'password' => 'required|min:6|confirmed:password_confirmation',
+            'password_confirmation' => 'required', 
+            'token'=>'required'
+        ]);
+        if ($validator->fails()) {
+            return $this->Response($validator->errors(),'validation errors',406);
+        }
+        $check=Password_reset_token::where('email','=',$request->email)->where('token','=',$request->token)->first();
+        if(!$check||$check->count()==0)
+        {
+            return $this->Response('','invalied email',406);
+        }
+        $user=Student::where('Email','=',$request->email)->first();
+        $user->update(
+            ['password'=>Hash::make($request->get('password'))]
+        );
+        $check->delete();
+        return $this->Response('','succesful',200);
     }
 }

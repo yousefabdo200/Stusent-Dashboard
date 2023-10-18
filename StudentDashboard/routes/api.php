@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Teacher\TeacherController;
-use App\Http\Controllers\Student\StudentController;/*
+use App\Http\Controllers\Student\StudentController;
+use  App\Http\Controllers\ResetPaswordController;
+/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -56,6 +58,8 @@ Route::group(['prefix'=>'Teacher'],function()
     Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');//set all students degrees
     Route::post('take_attend',[TeacherController::class,'take_attend'])->name('take_attend');//take  student attend attend 
     Route::get('atend_status/{class_code}',[TeacherController::class,'atend_status'])->name('atend_status');//view students all atendes status
+    Route ::post('sendemail',[TeacherController::class,'sendemail'])->name('sendemail');
+    Route ::post('restpassword/{token}',[TeacherController::class,'restpassword'])->name('sendemail');
 });
 Route::group(['prefix'=>'Student'],function()
 {
@@ -65,8 +69,8 @@ Route::group(['prefix'=>'Student'],function()
     Route::get('classes',[StudentController::class,'classes'])->name('classes');//get all student classes
     Route::get('class/{class_code}',[StudentController::class,'class'])->name('class');//get  class data
     Route::get('attend/{class_code}',[StudentController::class,'attend'])->name('attend');//get  class data
-    Route::get('exams/{class_code}',[StudentController::class,'exams'])->name('exam');//get  class data
-
+    Route::get('exams/{class_code}',[StudentController::class,'exams'])->name('exam');//get  all exams data
+    Route ::post('sendemail',[StudentController::class,'sendemail'])->name('sendemail');
+    Route ::post('restpassword/{token}',[StudentController::class,'restpassword'])->name('sendemail');
     //reset password
-   
 });
