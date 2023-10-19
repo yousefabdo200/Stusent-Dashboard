@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\UserNotice;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
@@ -65,6 +67,7 @@ class AdminController extends Controller
         }
         $admin = auth()->user(); // Retrieve the authenticated admin
         //$admin = auth()->user();
+        Mail::to($request->Email)->send(new UserNotice($request->name,'Teacher')); 
         $teacher=Teacher::create(
             [
                 'name'=>$request->get('name'),
@@ -85,7 +88,7 @@ class AdminController extends Controller
             'name'=>'required|max:250|string',
             'password' => 'required|min:6|confirmed:password_confirmation',
             'password_confirmation' => 'required', 
-            'SSN' => 'required|unique:Student|numeric|between:15,50',
+            'SSN' => 'required|unique:Student|numeric',
             'Email'=>'required|Email|unique:Student',
             'PEmail'=>'required|Email',
             'Pphone'=>'required|Numeric',
@@ -99,20 +102,22 @@ class AdminController extends Controller
         }
         $admin = auth()->user(); // Retrieve the authenticated admin
         //$admin = auth()->user();
-        $student=Student::create(
-            [
-                'name'=>$request->get('name'),
-                'password'=>Hash::make($request->get('password')),
-                'Email'=>$request->get('Email'),
-                'PEmail'=>$request->get('PEmail'),
-                'Pphone'=>$request->get('Pphone'),
-                'Grade'=>$request->get('Grade'),
-                'SSN'=>$request->get('SSN'),
-                'birth_date'=>$request->get('birth_date'),
-                'Admin_id'=>$admin->id
-            ]
-            );
-            $token = JWTAuth::fromUser($student);
+       
+            Mail::to($request->Email)->send(new UserNotice($request->name,'Student')); 
+            $student=Student::create(
+                [
+                    'name'=>$request->get('name'),
+                    'password'=>Hash::make($request->get('password')),
+                    'Email'=>$request->get('Email'),
+                    'PEmail'=>$request->get('PEmail'),
+                    'Pphone'=>$request->get('Pphone'),
+                    'Grade'=>$request->get('Grade'),
+                    'SSN'=>$request->get('SSN'),
+                    'birth_date'=>$request->get('birth_date'),
+                    'Admin_id'=>$admin->id
+                ]
+                );
+                $token = JWTAuth::fromUser($student);
             return $this->Response('','User successfully registered',200);
     } 
 

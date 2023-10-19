@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Teacher;
-
 use App\Http\Controllers\Controller;
 use App\Mail\RestPasswordEmail;
 use App\Models\Password_reset_token;
@@ -20,7 +18,6 @@ use App\Models\Classroom;
 use App\Models\Exam;
 use Illuminate\Pagination\Paginator;
 use PhpParser\Node\Expr\Eval_;
-
 class TeacherController extends Controller
 {
     use ApiResponse;
@@ -475,9 +472,7 @@ class TeacherController extends Controller
         {
             return $this->Response('','user not found',404);
         }
-
         //create token
-       
         date_default_timezone_set('Africa/Cairo');
         $email= Password_reset_token::where('email','=',$request->email)->first();
         //save token to database
@@ -525,5 +520,4 @@ class TeacherController extends Controller
         $check->delete();
         return $this->Response('','succesful',200);
     }
-    
 }

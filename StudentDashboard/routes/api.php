@@ -40,7 +40,6 @@ Route::group(['prefix'=>'Teacher'],function()
     Route::post('login',[TeacherController::class,'login'])->name('login');//Teacher login api route
     Route::get('Home',[TeacherController::class,'Home'])->name('Home');//Teacher Home page
     Route::get('logout',[TeacherController::class,'logout'])->name('logout');//Teacher log out
-    //reset password
     Route::get('classes',[TeacherController::class,'classes'])->name('classes');//view all class created by teacher
     Route::post('update_class/{class_code}',[TeacherController::class,'update_class'])->name('update_class');//update class information 
     Route::post('delete_class/{class_code}',[TeacherController::class,'delete_class'])->name('delete_class');//delete class and all realtions related to it
@@ -58,8 +57,8 @@ Route::group(['prefix'=>'Teacher'],function()
     Route::post('set_degrees',[TeacherController::class,'set_degrees'])->name('set_degrees');//set all students degrees
     Route::post('take_attend',[TeacherController::class,'take_attend'])->name('take_attend');//take  student attend attend 
     Route::get('atend_status/{class_code}',[TeacherController::class,'atend_status'])->name('atend_status');//view students all atendes status
-    Route ::post('sendemail',[TeacherController::class,'sendemail'])->name('sendemail');
-    Route ::post('restpassword/{token}',[TeacherController::class,'restpassword'])->name('sendemail');
+    Route ::post('sendemail',[TeacherController::class,'sendemail'])->name('sendemail');//send reset password Email
+    Route ::post('restpassword/{token}',[TeacherController::class,'restpassword'])->name('sendemail');//change password
 });
 Route::group(['prefix'=>'Student'],function()
 {
@@ -70,7 +69,6 @@ Route::group(['prefix'=>'Student'],function()
     Route::get('class/{class_code}',[StudentController::class,'class'])->name('class');//get  class data
     Route::get('attend/{class_code}',[StudentController::class,'attend'])->name('attend');//get  class data
     Route::get('exams/{class_code}',[StudentController::class,'exams'])->name('exam');//get  all exams data
-    Route ::post('sendemail',[StudentController::class,'sendemail'])->name('sendemail');
-    Route ::post('restpassword/{token}',[StudentController::class,'restpassword'])->name('sendemail');
-    //reset password
+    Route ::post('sendemail',[StudentController::class,'sendemail'])->name('sendemail');//send reset password Email
+    Route ::post('restpassword/{token}',[StudentController::class,'restpassword'])->name('sendemail');//change password
 });
