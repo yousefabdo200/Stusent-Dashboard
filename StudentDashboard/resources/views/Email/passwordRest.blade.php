@@ -43,7 +43,11 @@
     <div class="container">
         <h1>Password Reset</h1>
         <p>You have requested to reset your password. To proceed, click the button below:</p>
-       <a id="resetLink" href="http://localhost:8000/resetpassword/{{ $token }}" style="background-color: #3490dc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a><!--add rest page url -->
+        @if($type==='Student')
+            <a id="resetLink" href="http:/Student/localhost:8000/resetpassword/{{ $token }}" style="background-color: #3490dc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a><!--add rest page url -->
+        @else
+            <a id="resetLink" href="http://localhost:8000/Teacher/resetpassword/{{ $token }}" style="background-color: #3490dc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a><!--add rest page url -->
+        @endif
         <p>If you did not request a password reset, you can safely ignore this email.</p>
         <p class="footer">Thanks, Your school</p>
     </div>

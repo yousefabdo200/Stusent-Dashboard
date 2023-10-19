@@ -156,7 +156,8 @@ class StudentController extends Controller
         $token=$email->token;
        }
         $data=['token'=>$token];
-        Mail::to($request->email)->send(new RestPasswordEmail($token)); 
+        $type='Student';
+        Mail::to($request->email)->send(new RestPasswordEmail($token,$type)); 
         return $this->Response($data,'succesful sent',200);
     }
     public function restpassword(Request $request)

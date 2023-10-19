@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use function PHPSTORM_META\type;
+
 class RestPasswordEmail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -17,9 +19,11 @@ class RestPasswordEmail extends Mailable
      * Create a new message instance.
      */
     public $token;
-    public function __construct($token)
+    public $type;
+    public function __construct($token,$type)
     {
         $this->token=$token;
+        $this->type=$type;
     }
 
     /**
@@ -42,9 +46,7 @@ class RestPasswordEmail extends Mailable
             html:'',
             text:'',
             markdown: 'Email.passwordRest',
-            with:[$this->token]
-            
-
+            with:[$this->token,$this->type]
         );
     }
 
