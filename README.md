@@ -63,6 +63,9 @@ The system uses JSON Web Tokens (JWT) for authentication. When making API reques
 
 ### Reporting
 - Generate attendance and grade reports.
+  
+### API Documentation
+For detailed API documentation, please refer to our [API Documentation](https://documenter.getpostman.com/view/19908143/2s9YJZ3Pnw).
 
 ## Backend Technology
 This project utilizes Laravel for the backend, which serves as the REST API for the system.
