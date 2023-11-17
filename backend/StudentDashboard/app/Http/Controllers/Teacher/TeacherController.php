@@ -24,7 +24,7 @@ class TeacherController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth:teacher', ['except' => ['login','restpassword','sendemail']]);//login, register methods won't go through the admin guard
+        $this->middleware(['AdminMid:teacher'], ['except' => ['login', 'restpassword', 'sendemail']]);
 
     }
     public function login(Request $request)
@@ -41,8 +41,7 @@ class TeacherController extends Controller
         }
         //return response()->json($request, 422);
         if (! $token = auth('teacher')->attempt($validator->validated())) {
-            return $this->Response('','Unauthorized',401);
-            //return response()->json(['error' => 'Unauthorized'], 401);
+            return $this->Response('','incorrect data',401);            //return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->Response(['token'=>$token],'succesfull',200);
         //return response()->json(['token'=>$token], 200);*/

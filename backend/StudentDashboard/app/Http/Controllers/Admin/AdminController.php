@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\UserNotice;
 use App\Models\Student;
@@ -14,37 +14,36 @@ use App\Models\Teacher;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\ApiResponse;
 use App\Models\Classroom;
-
 class AdminController extends Controller
 {
     //
-    use ApiResponse;
+    use ApiResponse;    
     public function __construct()
     {
-        $this->middleware('auth:admin', ['except' => ['login']]);//login, register methods won't go through the admin guard
+        $this->middleware(['AdminMid:admin'], ['except' => 'login']);//login, register methods won't go through the admin guard
 
     }
 
     // login function
     public function login(Request $request)
     {
-        //validation 
-        $validator=Validator::make($request->all(),[
-            'name'=>'required',
-            'password'=>'required',
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'password' => 'required',
         ]);
+
         if ($validator->fails()) {
-            return $this->Response($validator->errors(),'validation errors',406);
-            //return response()->json($validator->errors(), 422);
+            return $this->Response($validator->errors(), 'Validation errors', 406);
         }
-        //return response()->json($request, 422);
+
+        // Attempt authentication
         if (! $token = auth('admin')->attempt($validator->validated())) {
-            return $this->Response('','Unauthorized',401);
+            return $this->Response('','incorrect data',401);
             //return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->Response(['token'=>$token],'succesfull',200);
-        //return response()->json(['token'=>$token], 200);
-    } 
+    }
     public function Home()
     {
         return $this->Response(auth()->user(),'succesfull',200);
